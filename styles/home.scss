@@ -24,10 +24,18 @@ h1 {
   right: 0;
 }
 
+.chatbar-message-form{
+  width:100%;
+  display:flex;
+}
+
+.hidden-elem{
+  visibility:hidden;
+}
+
 .chatbar-message,
 .chatbar-username {
   border: 1px solid black;
-  display: block;
   height: 40px;
   line-height: 40px;
   margin: 5px;

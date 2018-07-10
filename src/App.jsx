@@ -30,15 +30,25 @@ class App extends Component {
     }
   }
 
+  messageSubmitHandler = (event) => {
+    event.preventDefault();
+    let prevMessages = this.state.messages;
+    let newMsg = {
+      id: prevMessages.length + 1,
+      username: event.target.username.value,
+      content: event.target.message.value,
+    }
+    this.setState({
+      messages: [...prevMessages, newMsg ]
+    })
+  }
+
   componentDidMount() {
     console.log("componentDidMount <App />");
     setTimeout(() => {
       console.log("Simulating incoming message");
-      // Add a new message to the list of messages in the data store
       const newMessage = {id: 3000, username: "Michelle", content: "Hello there!"};
       const messages = this.state.messages.concat(newMessage)
-      // Update the state of the app component.
-      // Calling setState will trigger a call to render() in App and all child components.
       this.setState({messages: messages})
     }, 3000);
   }
@@ -48,7 +58,7 @@ class App extends Component {
       <div>
         <Nav />
         <MessageList messages={this.state.messages} />
-        <ChatBar currentUser={this.state.currentUser} />
+        <ChatBar messageSubmitHandler={this.messageSubmitHandler} currentUser={this.state.currentUser} />
       </div>
     );
   }
