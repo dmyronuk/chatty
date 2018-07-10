@@ -8,18 +8,28 @@ class App extends Component {
     super(props);
     // currentUser is optional - if currentUser is not defined, it means the user is Anonymous
     this.state = {
-      currentUser: {name: "Bob"},
+      currentUser: {name: "Anonymous"},
       messages: [],
     }
   }
 
   messageSubmitHandler = (event) => {
-    event.preventDefault();
-    let newMsg = {
-      username: event.target.username.value,
-      content: event.target.message.value,
+    if(event.key === "Enter"){
+      let newMsg = {
+        username: this.state.currentUser.name,
+        content: event.target.value,
+      }
+      this.socket.send(JSON.stringify(newMsg));
     }
-    this.socket.send(JSON.stringify(newMsg));
+  };
+
+  usernameSubmitHandler = (event) => {
+    if(event.key === "Enter"){
+      this.setState({
+        currentUser: {name: event.target.value}
+      })
+      // this.socket.send(JSON.stringify(newMsg));
+    }
   };
 
   componentDidMount = () => {
@@ -44,7 +54,11 @@ class App extends Component {
       <div>
         <Nav />
         <MessageList messages={this.state.messages} />
-        <ChatBar messageSubmitHandler={this.messageSubmitHandler} currentUser={this.state.currentUser} />
+        <ChatBar
+          usernameSubmitHandler={this.usernameSubmitHandler}
+          messageSubmitHandler={this.messageSubmitHandler}
+          currentUser={this.state.currentUser}
+        />
       </div>
     );
   }
