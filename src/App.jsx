@@ -38,6 +38,8 @@ class App extends Component {
       username: event.target.username.value,
       content: event.target.message.value,
     }
+
+    this.socket.send(JSON.stringify(newMsg));
     this.setState({
       messages: [...prevMessages, newMsg ]
     })
@@ -47,7 +49,7 @@ class App extends Component {
     console.log("componentDidMount <App />");
     this.socket = new WebSocket("ws://0.0.0.0:3001");
     this.socket.onopen = function (event){
-      console.log("Connected to server.")
+      console.log("Connected to server")
     };
 
     setTimeout(() => {
