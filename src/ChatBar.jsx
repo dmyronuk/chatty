@@ -1,12 +1,12 @@
 import React from "react";
 
-function Footer(){
+function ChatBar(props){
   return (
     <footer className="chatbar">
-      <input className="chatbar-username" placeholder="Your Name (Optional)" />
+      <input className="chatbar-username" defaultValue={props.currentUser.name} />
       <input className="chatbar-message" placeholder="Type a message and hit ENTER" />
     </footer>
   )
 }
 
-export default Footer;
+export default ChatBar;
