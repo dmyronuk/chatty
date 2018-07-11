@@ -2,7 +2,7 @@ import React from "react";
 
 function Message(props){
 
-  let regex = /https?:\/\/\S+\.(?:jpg|jpeg|png|gif)/g;
+  let regex = /https?:\/\/\S+\.(?:jpg|jpeg|png|gif)(?:\?\S+)?/g;
   let imageURL = props.content.match(regex);
   //if there's text plus an image url, splice the image url out of the text content
   let parsedContent = imageURL ? props.content.replace(imageURL, "") : props.content;
