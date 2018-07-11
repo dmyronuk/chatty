@@ -4,17 +4,30 @@ const uuid = require("uuid");
 
 const PORT = 3001;
 const server = express()
-   // Make the express server serve static assets (html, javascript, css) from the /public folder
   .use(express.static("public"))
   .listen(PORT, "0.0.0.0", "localhost", () => console.log(`Listening on ${ PORT }`));
 
 const wss = new SocketServer({ server });
 
-// Set up a callback that will run when a client connects to the server
-// When a client connects they are assigned a socket, represented by
-// the ws parameter in the callback.
+//Helper used when a client connects or disconnects from server
+//Broadcasts message to all connected clients so that app state can be updated to reflect total clients connected
+const connectionHandler = (eventVerb) => {
+  console.log(`Client ${eventVerb}`);
+  let connMsg = {
+    numClients: wss.clients.size,
+    type: "connectionNotification",
+  };
+  let connMsgJSON = JSON.stringify(connMsg);
+
+  wss.clients.forEach(function each(client) {
+    if (client.readyState === 1) {
+      client.send(connMsgJSON);
+    }
+  });
+}
+
 wss.on("connection", (ws) => {
-  console.log('Client connected');
+  connectionHandler("connected");
 
   ws.on("message", function incoming(data) {
     let dataObj = JSON.parse(data);
@@ -34,8 +47,8 @@ wss.on("connection", (ws) => {
         break;
     }
 
+    //Broadcast new message data
     let outData = JSON.stringify(dataObj);
-
     wss.clients.forEach(function each(client) {
       if (client.readyState === 1) {
         client.send(outData);
@@ -43,6 +56,7 @@ wss.on("connection", (ws) => {
     });
   });
 
-// Set up a callback for when a client closes the socket. This usually means they closed their browser.
-ws.on("close", () => console.log("Client disconnected"));
+ws.on("close", () => {
+    connectionHandler("disconnected");
+  });
 });

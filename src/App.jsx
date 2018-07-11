@@ -10,8 +10,9 @@ class App extends Component {
     this.state = {
       currentUser: {name: "Anonymous"},
       messages: [],
+      clientsConnected: 0,
     }
-  }
+  };
 
   messageSubmitHandler = (message) => {
     let newMsg = {
@@ -33,29 +34,36 @@ class App extends Component {
         type: "postNotification",
       }
     this.socket.send(JSON.stringify(newMsg));
-  }
+  };
 
   componentDidMount(){
     console.log("componentDidMount <App />");
     this.socket = new WebSocket("ws://0.0.0.0:3001");
 
+    //can also use socket.addEventListener("open", cb)
     this.socket.onopen = (event) => {
       console.log("Connected to server")
     };
 
     this.socket.onmessage = (event) => {
       let parsedData = JSON.parse(event.data);
-      let prevMessages = this.state.messages;
-      this.setState({
-        messages: [...prevMessages, parsedData ]
-      })
+      if(parsedData.type === "connectionNotification"){
+        this.setState({
+          clientsConnected: parsedData.numClients,
+        })
+      }else{
+        let prevMessages = this.state.messages;
+        this.setState({
+          messages: [...prevMessages, parsedData ]
+        })
+      }
     }
   };
 
   render() {
     return (
       <div>
-        <Nav />
+        <Nav clientsConnected={this.state.clientsConnected}/>
         <MessageList messages={this.state.messages} />
         <ChatBar
           messageSubmitHandler={this.messageSubmitHandler}
