@@ -19,6 +19,21 @@ wss.on("connection", (ws) => {
   ws.on("message", function incoming(data) {
     let dataObj = JSON.parse(data);
     dataObj.id = uuid();
+
+    switch(dataObj.type){
+      case "postMessage":
+        dataObj.type = "incomingMessage";
+        break;
+
+      case "postNotification":
+        dataObj.type = "incomingNotification";
+        break;
+
+      default:
+        throw new Error("Unknown event type " + dataObj.type);
+        break;
+    }
+
     let outData = JSON.stringify(dataObj);
 
     wss.clients.forEach(function each(client) {
@@ -26,7 +41,6 @@ wss.on("connection", (ws) => {
         client.send(outData);
       }
     });
-    console.log(outData);
   });
 
 // Set up a callback for when a client closes the socket. This usually means they closed their browser.

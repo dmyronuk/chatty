@@ -13,26 +13,29 @@ class App extends Component {
     }
   }
 
-  messageSubmitHandler = (event) => {
-    if(event.key === "Enter"){
-      let newMsg = {
+  messageSubmitHandler = (message) => {
+    let newMsg = {
         username: this.state.currentUser.name,
-        content: event.target.value,
+        content: message,
+        type: "postMessage",
       }
-      this.socket.send(JSON.stringify(newMsg));
-    }
+    this.socket.send(JSON.stringify(newMsg));
   };
 
-  usernameSubmitHandler = (event) => {
-    if(event.key === "Enter"){
-      this.setState({
-        currentUser: {name: event.target.value}
-      })
-      // this.socket.send(JSON.stringify(newMsg));
-    }
-  };
+  notificationSubmitHandler = (newUsername) => {
+    this.setState({
+      currentUser: {name: newUsername}
+    })
+    let msgStr = `${this.state.currentUser.name} has changed their name to ${newUsername}`;
+    let newMsg = {
+        username: newUsername,
+        content: msgStr,
+        type: "postNotification",
+      }
+    this.socket.send(JSON.stringify(newMsg));
+  }
 
-  componentDidMount = () => {
+  componentDidMount(){
     console.log("componentDidMount <App />");
     this.socket = new WebSocket("ws://0.0.0.0:3001");
 
@@ -41,10 +44,10 @@ class App extends Component {
     };
 
     this.socket.onmessage = (event) => {
+      let parsedData = JSON.parse(event.data);
       let prevMessages = this.state.messages;
-      let newMsg = JSON.parse(event.data);
       this.setState({
-        messages: [...prevMessages, newMsg ]
+        messages: [...prevMessages, parsedData ]
       })
     }
   };
@@ -55,8 +58,8 @@ class App extends Component {
         <Nav />
         <MessageList messages={this.state.messages} />
         <ChatBar
-          usernameSubmitHandler={this.usernameSubmitHandler}
           messageSubmitHandler={this.messageSubmitHandler}
+          notificationSubmitHandler={this.notificationSubmitHandler}
           currentUser={this.state.currentUser}
         />
       </div>

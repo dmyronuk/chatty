@@ -1,9 +1,9 @@
 import React from "react";
 
-function Notification(){
+function Notification(props){
   return (
     <div className="message system">
-      Anonymous1 changed their name to nomnom.
+      {props.content}
     </div>
   )
 }
