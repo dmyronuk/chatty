@@ -47,10 +47,12 @@ class App extends Component {
 
     this.socket.onmessage = (event) => {
       let parsedData = JSON.parse(event.data);
+      //update state of app in response to notification broadcast from server to client
       if(parsedData.type === "connectionNotification"){
         this.setState({
           clientsConnected: parsedData.numClients,
         })
+      //update state of app in response to message broadcast from server to client
       }else{
         let prevMessages = this.state.messages;
         this.setState({
@@ -64,7 +66,9 @@ class App extends Component {
     return (
       <div>
         <Nav clientsConnected={this.state.clientsConnected}/>
-        <MessageList messages={this.state.messages} />
+        <MessageList
+          messages={this.state.messages}
+        />
         <ChatBar
           messageSubmitHandler={this.messageSubmitHandler}
           notificationSubmitHandler={this.notificationSubmitHandler}

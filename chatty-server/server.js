@@ -26,8 +26,15 @@ const connectionHandler = (eventVerb) => {
   });
 }
 
+const assignColorClass = () => {
+  let choices = ["A", "B", "C", "D"];
+  let choiceInd = Math.floor(Math.random() * 4);
+  return `msg-style-${choices[choiceInd]}`;
+};
+
 wss.on("connection", (ws) => {
   connectionHandler("connected");
+  let colorClass = assignColorClass();
 
   ws.on("message", function incoming(data) {
     let dataObj = JSON.parse(data);
@@ -35,10 +42,12 @@ wss.on("connection", (ws) => {
 
     switch(dataObj.type){
       case "postMessage":
+        dataObj.msgColorClass = colorClass;
         dataObj.type = "incomingMessage";
         break;
 
       case "postNotification":
+        dataObj.msgColorClass = "#000000";
         dataObj.type = "incomingNotification";
         break;
 
