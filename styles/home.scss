@@ -2,11 +2,11 @@
 @import url("https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css");
 
 body {
+  box-sizing:border-box;
   background: white;
   color: black;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
-  margin: 70px 0;
 }
 
 h1 {
@@ -14,7 +14,7 @@ h1 {
 }
 
 .chatbar {
-  background: tomato;
+  background: $nav-footer-color;
   border-top: 1px solid black;
   bottom: 0;
   display: flex;
@@ -44,37 +44,76 @@ h1 {
   flex-basis:13vw;
 }
 
+.messages-outer{
+  min-height:100vh;
+  display:flex;
+  flex-direction:row;
+  justify-content:center;
+  background:white;
+}
+
+.sidebar{
+  background:$sidebar-color;
+  min-height:100vh;
+  min-width:175px;
+  width:20vw;
+}
+
+.messages{
+  flex-grow:1;
+  margin:$nav-height 0;
+  padding: 2rem;
+  display:flex;
+  flex-direction:column;
+}
+
 .message {
-  max-width:100vw;
-  display: flex;
-  padding: 5px;
+  max-width:50vw;
+  padding: 0.5rem 0.5rem;
+  margin:0.4rem 0;
+  flex-direction:column;
+  padding:1rem;
+}
+
+.current-user-message,
+.other-user-message{
+  border:1px solid #cccccc;
+  border-radius:0.35rem;
+  box-shadow: -2px 2px 2px #aaaaaa;
+  background:white;
+  display:flex;
 }
 
 .current-user-message{
-  background:red;
+  align-self:flex-end;
 }
 
-.message.system {
-  font-style: italic;
-  padding: 5px 20px;
+.other-user-message{
+  align-self:flex-start;
+  background:#eeeeee;
 }
 
 .message-content,
 .message-username {
-  margin: 5px;
-  padding: 0 10px;
+
 }
 
 .message-username{
-  flex-grow:0;
-  flex-shrink:0;
-  flex-basis:13vw;
-  flex-wrap:wrap;
   font-weight: 700;
+  width:100%;
 }
 
 .message-content {
-  flex-grow: 1;
+  padding-top:0.5rem;
+}
+
+
+
+.message.system {
+  font-style: italic;
+  padding: 5px 20px;
+  text-align:center;
+  align-self:center;
 }
 
 .msg-style-A{
@@ -94,32 +133,37 @@ h1 {
 }
 
 .navbar-brand {
-  color: inherit;
+  font-family: $title-font;
+  color:$title-color;
   display: block;
   float: left;
   font-weight: 700;
-  font-size: 28px;
-  height: 60px;
-  line-height: 60px;
+  font-size: 2.9rem;
+  height: $nav-height;
+  line-height: $nav-height;
   padding: 0 10px;
   text-decoration: none;
 }
 
 .navbar {
-  background: tomato;
+  background: $nav-footer-color;
   border-bottom: 1px solid black;
-  height: 60px;
+  height: $nav-height;
   left: 0;
   padding: 0 10px;
   position: fixed;
   right: 0;
   top: 0;
   display:flex;
+  flex-direction:row;
+  justify-content:center;
   align-items:center;
+  min-width:400px;
 }
 
 .clients-connected-msg{
-  margin-left:auto;
+  position:absolute;
+  right:1rem;
   font-size:1rem;
 }
 

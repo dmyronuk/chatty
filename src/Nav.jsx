@@ -5,7 +5,9 @@ function Nav(props){
 
   return (
     <nav className="navbar">
-      <a href="/" className="navbar-brand">Chatty</a>
+      <div>
+        <a href="/" className="navbar-brand">Chatty</a>
+      </div>
       <div className="clients-connected-msg">
         {`${props.clientsConnected} user${suffix} online`}
       </div>
