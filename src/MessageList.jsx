@@ -1,12 +1,13 @@
 import React from "react";
 import Notification from "./Notification.jsx";
 import Message from "./Message.jsx";
+import Sidebar from "./Sidebar.jsx";
+
 
 function MessageList(props){
   return (
     <div className="messages-outer">
-      <div className="sidebar">
-      </div>
+      <Sidebar onlineUsers={props.onlineUsers} />
       <main className="messages">
         {props.messages.map(elem =>
           elem.type === "incomingMessage" ?

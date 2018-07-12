@@ -9,12 +9,15 @@ const server = express()
 
 const wss = new SocketServer({ server });
 
+const onlineUsers = {};
+
 //Helper used when a client connects or disconnects from server
 //Broadcasts message to all connected clients so that app state can be updated to reflect total clients connected
 const connectionHandler = (eventVerb) => {
   console.log(`Client ${eventVerb}`);
   let connMsg = {
     numClients: wss.clients.size,
+    onlineUsers: onlineUsers,
     type: "connectionNotification",
   };
 
@@ -25,9 +28,10 @@ const connectionHandler = (eventVerb) => {
   });
 };
 
-const userIdAssignHandler = (ws) => {
+//assign user a unique id and store user in onlineUsers
+const userIdAssignHandler = (ws, id) => {
   let userIdMsg = {
-    id: uuid(),
+    id: id,
     type: "userIdNotification",
   };
   ws.send(JSON.stringify(userIdMsg));
@@ -35,7 +39,6 @@ const userIdAssignHandler = (ws) => {
 
 //Helper user when a client connects to server
 //Broadcast only to the connecting client, assigning a unique user id
-
 const assignColorClass = () => {
   let choices = ["A", "B", "C", "D"];
   let choiceInd = Math.floor(Math.random() * 4);
@@ -43,9 +46,12 @@ const assignColorClass = () => {
 };
 
 wss.on("connection", (ws) => {
-  connectionHandler("connected");
-  userIdAssignHandler(ws);
   let colorClass = assignColorClass();
+  let userId = uuid();
+  //global object that keeps track of all online userIds and usernames
+  onlineUsers[userId] = "Anonymous";
+  userIdAssignHandler(ws, userId);
+  connectionHandler("connected");
 
   ws.on("message", function incoming(data) {
     let dataObj = JSON.parse(data);
@@ -57,9 +63,12 @@ wss.on("connection", (ws) => {
         dataObj.type = "incomingMessage";
         break;
 
+      //name change message sent from client to server
       case "postNotification":
+        onlineUsers[dataObj.userId] = dataObj.username;
         dataObj.msgColorClass = "#000000";
         dataObj.type = "incomingNotification";
+        dataObj.onlineUsers = onlineUsers;
         break;
 
       default:
@@ -76,7 +85,10 @@ wss.on("connection", (ws) => {
     });
   });
 
-ws.on("close", () => {
-    connectionHandler("disconnected");
+  ws.on("close", () => {
+    // console.log(userId);
+    delete onlineUsers[userId];
+    // Object.keys(onlineUsers).forEach(elem => console.log(elem, onlineUsers[elem]))
+    console.log(onlineUsers)
   });
 });

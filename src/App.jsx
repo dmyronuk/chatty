@@ -13,6 +13,7 @@ class App extends Component {
         name: "Anonymous",
         id: null,
       },
+      onlineUsers: [],
       messages: [],
       clientsConnected: 0,
     }
@@ -37,6 +38,7 @@ class App extends Component {
     let msgStr = `${this.state.currentUser.name} has changed their name to ${newUsername}`;
     let newMsg = {
         username: newUsername,
+        userId: this.state.currentUser.id,
         content: msgStr,
         type: "postNotification",
       }
@@ -60,27 +62,55 @@ class App extends Component {
 
     this.socket.onmessage = (event) => {
       let parsedData = JSON.parse(event.data);
+      let prevMessages;
       //update state of app in response to notification broadcast from server to client
-      if(parsedData.type === "connectionNotification"){
-        this.setState({
-          clientsConnected: parsedData.numClients,
-        })
+      switch(parsedData.type){
+        case "connectionNotification":
+          this.setState({
+            onlineUsers: parsedData.onlineUsers,
+            clientsConnected: parsedData.numClients,
+          })
+          break;
 
-      //when user first connects, server sends client a user UUID and app updates its state to include this id
-      }else if(parsedData.type === "userIdNotification"){
-        let newCurrentUserState = Object.assign(this.state.currentUser, {id: parsedData.id});
-        this.setState({
-          currentUser: newCurrentUserState
-        })
+        //when user first connects, server sends client a user UUID and app updates its state to include this id
+        case "userIdNotification":
+          let newCurrentUserState = Object.assign(this.state.currentUser, {id: parsedData.id});
+          this.setState({
+            currentUser: newCurrentUserState
+          })
+          break;
 
-      //update state of app in response to message broadcast from server to client
-      }else{
-        let prevMessages = this.state.messages;
-        this.setState({
-          messages: [...prevMessages, parsedData ]
-        })
+        //in response to a new message
+        case "incomingMessage":
+          prevMessages = this.state.messages;
+          this.setState({
+            messages: [...prevMessages, parsedData ]
+          })
+          break;
+
+        //in response to user name change
+        case "incomingNotification":
+          prevMessages = this.state.messages;
+          //separate out online users and message data from the incoming data object
+          let onlineUsers = parsedData.onlineUsers;
+          delete parsedData.onlineUsers;
+
+          this.setState({
+            onlineUsers: onlineUsers,
+            messages: [...prevMessages, parsedData ]
+          })
+          break;
       }
     }
+
+    //send msg to tell the server to delete userId from onlineUsers
+    this.socket.onclose = (event) => {
+      let closeMsg = {
+        type: "closeMsg",
+        userId: this.state.currentUser.id,
+      }
+      this.socket.send(JSON.stringify(closeMsg));
+    };
   };
 
   componentDidUpdate() {
@@ -97,6 +127,7 @@ class App extends Component {
       <div>
         <Nav clientsConnected={this.state.clientsConnected}/>
         <MessageList
+          onlineUsers={this.state.onlineUsers}
           currentUserId={this.state.currentUser.id}
           messages={this.state.messages}
         />
