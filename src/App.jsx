@@ -19,13 +19,16 @@ class App extends Component {
   };
 
   messageSubmitHandler = (message) => {
-    let newMsg = {
+    //before submitting message check if message is empty string
+    if(message.trim()){
+      let newMsg = {
         username: this.state.currentUser.name,
         userId: this.state.currentUser.id,
         content: message,
         type: "postMessage",
       }
-    this.socket.send(JSON.stringify(newMsg));
+      this.socket.send(JSON.stringify(newMsg));
+    }
   };
 
   notificationSubmitHandler = (newUsername) => {
