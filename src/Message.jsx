@@ -6,9 +6,10 @@ function Message(props){
   let imageURL = props.content.match(regex);
   //if there's text plus an image url, splice the image url out of the text content
   let parsedContent = imageURL ? props.content.replace(imageURL, "") : props.content;
+  let msgOwnershipClass = (props.currentUserId ===  props.msgUserId) ? "current-user-message" : "other-user-message";
 
   return (
-    <div className="message">
+    <div className={`message ${msgOwnershipClass}`}>
       <div className={`message-username ${props.msgColorClass}`}>{props.username}</div>
       <div className="message-content">
         <div>

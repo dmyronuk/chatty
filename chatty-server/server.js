@@ -17,14 +17,24 @@ const connectionHandler = (eventVerb) => {
     numClients: wss.clients.size,
     type: "connectionNotification",
   };
-  let connMsgJSON = JSON.stringify(connMsg);
 
   wss.clients.forEach(function each(client) {
     if (client.readyState === 1) {
-      client.send(connMsgJSON);
+      client.send(JSON.stringify(connMsg));
     }
   });
-}
+};
+
+const userIdAssignHandler = (ws) => {
+  let userIdMsg = {
+    id: uuid(),
+    type: "userIdNotification",
+  };
+  ws.send(JSON.stringify(userIdMsg));
+};
+
+//Helper user when a client connects to server
+//Broadcast only to the connecting client, assigning a unique user id
 
 const assignColorClass = () => {
   let choices = ["A", "B", "C", "D"];
@@ -34,6 +44,7 @@ const assignColorClass = () => {
 
 wss.on("connection", (ws) => {
   connectionHandler("connected");
+  userIdAssignHandler(ws);
   let colorClass = assignColorClass();
 
   ws.on("message", function incoming(data) {

@@ -8,6 +8,8 @@ function MessageList(props){
       {props.messages.map(elem =>
         elem.type === "incomingMessage" ?
           <Message
+            currentUserId={props.currentUserId}
+            msgUserId={elem.userId}
             key={elem.id}
             username={elem.username}
             content={elem.content}

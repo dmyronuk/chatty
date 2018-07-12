@@ -7,8 +7,12 @@ class App extends Component {
   constructor(props){
     super(props);
     // currentUser is optional - if currentUser is not defined, it means the user is Anonymous
+    // currentUser.id state will be assigned by server when client first connects
     this.state = {
-      currentUser: {name: "Anonymous"},
+      currentUser: {
+        name: "Anonymous",
+        id: null,
+      },
       messages: [],
       clientsConnected: 0,
     }
@@ -17,6 +21,7 @@ class App extends Component {
   messageSubmitHandler = (message) => {
     let newMsg = {
         username: this.state.currentUser.name,
+        userId: this.state.currentUser.id,
         content: message,
         type: "postMessage",
       }
@@ -24,9 +29,8 @@ class App extends Component {
   };
 
   notificationSubmitHandler = (newUsername) => {
-    this.setState({
-      currentUser: {name: newUsername}
-    })
+
+    //send name change notification to socket server for broadcast to all other connected clients
     let msgStr = `${this.state.currentUser.name} has changed their name to ${newUsername}`;
     let newMsg = {
         username: newUsername,
@@ -34,6 +38,12 @@ class App extends Component {
         type: "postNotification",
       }
     this.socket.send(JSON.stringify(newMsg));
+
+    //update state of current user
+    let newCurrentUserState = Object.assign(this.state.currentUser, {name: newUsername});
+    this.setState({
+      currentUser: newCurrentUserState
+    });
   };
 
   componentDidMount(){
@@ -52,6 +62,14 @@ class App extends Component {
         this.setState({
           clientsConnected: parsedData.numClients,
         })
+
+      //when user first connects, server sends client a user UUID and app updates its state to include this id
+      }else if(parsedData.type === "userIdNotification"){
+        let newCurrentUserState = Object.assign(this.state.currentUser, {id: parsedData.id});
+        this.setState({
+          currentUser: newCurrentUserState
+        })
+
       //update state of app in response to message broadcast from server to client
       }else{
         let prevMessages = this.state.messages;
@@ -76,6 +94,7 @@ class App extends Component {
       <div>
         <Nav clientsConnected={this.state.clientsConnected}/>
         <MessageList
+          currentUserId={this.state.currentUser.id}
           messages={this.state.messages}
         />
         <ChatBar
