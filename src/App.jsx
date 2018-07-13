@@ -114,7 +114,7 @@ class App extends Component {
   };
 
   componentDidUpdate() {
-    // window.scrollTo(0, document.body.scrollHeight);
+    // window.scrollTo(0, document.body.scrollHeight) - scrolls window to bottom of page showing latest message;
     window.scrollTo({
       top: document.body.scrollHeight,
       left:0,
