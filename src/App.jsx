@@ -41,7 +41,7 @@ class App extends Component {
         userId: this.state.currentUser.id,
         content: msgStr,
         type: "postNotification",
-      }
+      };
     this.socket.send(JSON.stringify(newMsg));
 
     //update state of current user
@@ -52,12 +52,11 @@ class App extends Component {
   };
 
   componentDidMount(){
-    console.log("componentDidMount <App />");
     this.socket = new WebSocket("ws://0.0.0.0:3001");
 
     //can also use socket.addEventListener("open", cb)
     this.socket.onopen = (event) => {
-      console.log("Connected to server")
+      console.log("Connected to server");
     };
 
     this.socket.onmessage = (event) => {
@@ -77,7 +76,7 @@ class App extends Component {
           let newCurrentUserState = Object.assign(this.state.currentUser, {id: parsedData.id});
           this.setState({
             currentUser: newCurrentUserState
-          })
+          });
           break;
 
         //in response to a new message
@@ -85,7 +84,7 @@ class App extends Component {
           prevMessages = this.state.messages;
           this.setState({
             messages: [...prevMessages, parsedData ]
-          })
+          });
           break;
 
         //in response to user name change
@@ -98,10 +97,10 @@ class App extends Component {
           this.setState({
             onlineUsers: onlineUsers,
             messages: [...prevMessages, parsedData ]
-          })
+          });
           break;
-      }
-    }
+      };
+    };
 
     //send msg to tell the server to delete userId from onlineUsers
     this.socket.onclose = (event) => {
@@ -120,7 +119,7 @@ class App extends Component {
       left:0,
       behavior: "smooth",
     });
-  }
+  };
 
   render() {
     return (
@@ -138,7 +137,7 @@ class App extends Component {
         />
       </div>
     );
-  }
-}
+  };
+};
 export default App;
 
