@@ -89,6 +89,6 @@ wss.on("connection", (ws) => {
     // console.log(userId);
     delete onlineUsers[userId];
     // Object.keys(onlineUsers).forEach(elem => console.log(elem, onlineUsers[elem]))
-    console.log(onlineUsers)
+    connectionHandler("disconnected");
   });
 });
