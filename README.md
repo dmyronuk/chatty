@@ -1,10 +1,10 @@
 # Chatty
 
 ## About
-Chat App
+Real-time chat app build with React and websockets.
 
 ## Screenshots
-
+![Sample Chat Session](https://raw.githubusercontent.com/dmyronuk/chatty/master/screenshots/demo.gif)
 
 ## Dependencies
 - babel-core
@@ -26,8 +26,11 @@ Chat App
 - From root run ```npm install``` and then ```npm start``` to fire up the react dev server
 - Open browser to [localhost](http://127.0.0.1:3000) and start chatting
 
-## Bugs
+## Issues
+- If multiple image urls are posted to chat in a single message, some images will not render correctly
 
 ## Roadmap
+- Allow renders to select an online user and render only messages posted by that user
+- Fix regex bugs when user posts an imageurl 
 
 
